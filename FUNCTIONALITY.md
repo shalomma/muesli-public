@@ -155,16 +155,16 @@ This server exists to keep `RECALLAI_API_KEY` out of the renderer process. All R
 
 | Event | Description |
 |---|---|
-| `meeting-detected` | A supported meeting platform was found |
-| `meeting-updated` | Meeting state or participants changed (title, url) |
-| `meeting-closed` | Meeting ended |
-| `recording-started` | Recording has started |
-| `recording-ended` | Recording finished; upload begins |
-| `permissions-granted` | All required OS permissions were granted |
-| `upload-progress` | Upload progress to Recall.ai servers |
-| `sdk-state-change` | Internal SDK state transition |
-| `realtime-event` | Real-time data — dispatches to sub-handlers by event type (see below) |
-| `error` | SDK error — shows an OS notification with the error type and message. The SDK auto-restarts on unexpected shutdown. |
+| `meeting-detected` | Stores the meeting in `detectedMeeting`, shows an OS notification (clicking it calls `joinDetectedMeeting()`), sends `meeting-detection-status: true` to renderer |
+| `meeting-updated` | Updates `detectedMeeting` with the latest title/URL; if a note already exists for this meeting, retroactively updates its title in `meetings.json` and sends `meeting-title-updated` to renderer |
+| `meeting-closed` | Clears `detectedMeeting` and `global.activeMeetingIds` entry, sends `meeting-detection-status: false` to renderer |
+| `recording-started` | No handler — event is not subscribed to in the app |
+| `recording-ended` | Calls `updateNoteWithRecordingInfo()`, then after a 3 s delay fetches a new upload token and calls `RecallAiSdk.uploadRecording()` |
+| `permissions-granted` | No-op — logs to console only |
+| `upload-progress` | Logs progress to console; when `progress === 100` logs upload completion (no UI update) |
+| `sdk-state-change` | Updates `activeRecordings` state (`recording` → adds entry, `paused` → updates state, `idle` → removes entry); sends `recording-state-change` to renderer |
+| `realtime-event` | Dispatches to sub-handlers by event type (see below) |
+| `error` | Shows an OS notification with the error type and message. The SDK auto-restarts on unexpected shutdown. |
 
 ### Not implemented
 

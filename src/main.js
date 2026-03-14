@@ -344,7 +344,9 @@ function initSDK() {
     // Log the meeting detected event
     sdkLogger.logEvent('meeting-detected', {
       platform: evt.window.platform,
-      windowId: evt.window.id
+      windowId: evt.window.id,
+      title: evt.window.title,
+      url: evt.window.url,
     });
 
     detectedMeeting = evt;
@@ -458,7 +460,10 @@ function initSDK() {
 
     // Log the SDK meeting-closed event
     sdkLogger.logEvent('meeting-closed', {
-      windowId: evt.window.id
+      windowId: evt.window.id,
+      platform: evt.window.platform,
+      title: evt.window.title,
+      url: evt.window.url,
     });
 
     // Clean up the global tracking when a meeting ends
@@ -481,7 +486,9 @@ function initSDK() {
 
     // Log the SDK recording-ended event
     sdkLogger.logEvent('recording-ended', {
-      windowId: evt.window.id
+      windowId: evt.window.id,
+      platform: evt.window.platform,
+      title: evt.window.title,
     });
 
     try {
@@ -537,7 +544,8 @@ function initSDK() {
   });
 
   RecallAiSdk.addEventListener('permissions-granted', async (evt) => {
-    console.log("PERMISSIONS GRANTED");
+    console.log("PERMISSIONS GRANTED", evt);
+    sdkLogger.logEvent('permissions-granted', { raw: evt });
   });
 
   // Track upload progress
@@ -545,17 +553,10 @@ function initSDK() {
     const { progress, window } = evt;
     console.log(`Upload progress: ${progress}%`);
 
-    // Log the SDK upload-progress event
-    // sdkLogger.logEvent('upload-progress', {
-    //   windowId: window.id,
-    //   progress
-    // });
-
-    // Update the note with upload progress if needed
-    if (progress === 100) {
-      console.log(`Upload completed for recording: ${window.id}`);
-      // Could update the note here with upload completion status
-    }
+    sdkLogger.logEvent('upload-progress', {
+      windowId: window.id,
+      progress,
+    });
   });
 
   // Track SDK state changes
@@ -629,6 +630,59 @@ function initSDK() {
     else if (evt.event === 'video_separate_png.data' && evt.data && evt.data.data) {
       await processVideoFrame(evt);
     }
+  });
+
+  // Log-only listeners for SDK events not yet handled by the app
+
+  RecallAiSdk.addEventListener('recording-started', async (evt) => {
+    console.log("Recording started:", evt);
+    sdkLogger.logEvent('recording-started', {
+      windowId: evt.window?.id,
+      platform: evt.window?.platform,
+      title: evt.window?.title,
+    });
+  });
+
+  RecallAiSdk.addEventListener('permission-status', async (evt) => {
+    console.log("Permission status:", evt);
+    sdkLogger.logEvent('permission-status', {
+      permission: evt.permission,
+      status: evt.status,
+    });
+  });
+
+  RecallAiSdk.addEventListener('media-capture-status', async (evt) => {
+    console.log("Media capture status:", evt);
+    sdkLogger.logEvent('media-capture-status', {
+      windowId: evt.window?.id,
+      type: evt.type,
+      capturing: evt.capturing,
+    });
+  });
+
+  RecallAiSdk.addEventListener('participant-capture-status', async (evt) => {
+    console.log("Participant capture status:", evt);
+    sdkLogger.logEvent('participant-capture-status', {
+      windowId: evt.window?.id,
+      participantId: evt.participantId,
+      type: evt.type,
+      capturing: evt.capturing,
+    });
+  });
+
+  RecallAiSdk.addEventListener('network-status', async (evt) => {
+    console.log("Network status:", evt);
+    sdkLogger.logEvent('network-status', {
+      status: evt.status,
+    });
+  });
+
+  RecallAiSdk.addEventListener('shutdown', async (evt) => {
+    console.log("SDK shutdown:", evt);
+    sdkLogger.logEvent('shutdown', {
+      code: evt.code,
+      signal: evt.signal,
+    });
   });
 
   // Handle errors
