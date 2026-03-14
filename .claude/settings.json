@@ -1,0 +1,46 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit",
+      "Read",
+      "Write",
+      "WebSearch",
+      "WebFetch",
+      "Bash",
+      "Task",
+      "Skill",
+      "mcp__*",
+      "mcp__ide",
+      "mcp__supabase",
+      "mcp__plugin_linear_linear",
+      "mcp__posthog",
+      "mcp__plugin_context7_context7",
+      "mcp__linear-server",
+      "mcp__claude_ai_Supabase",
+      "mcp__claude_ai_Sentry",
+      "mcp__rube",
+      "mcp__claude_ai_Linear",
+      "mcp__plugin_figma_figma",
+      "mcp__claude_ai_Gmail",
+      "mcp__cloudflare-api",
+      "mcp__claude_ai_Vercel",
+      "mcp__claude_ai_Xpoz",
+      "mcp__claude_ai_Google_Calendar",
+      "mcp__claude_ai_PostHog"
+    ],
+    "ask": [
+      "Bash(rm:*)"
+    ]
+  },
+  "outputStyle": "explanatory",
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "linear-server"
+  ],
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "playground@claude-plugins-official": true
+  }
+}
