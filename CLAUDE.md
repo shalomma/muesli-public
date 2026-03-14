@@ -35,6 +35,10 @@ Required in `.env`:
 - `RECALLAI_API_KEY` — Recall.ai API key
 - `OPENAI_API_KEY` — (optional) OpenAI key for AI meeting summaries
 
+## Git
+
+- Always push to the fork `origin` (`shalomma/muesli-public`), never to `upstream` (`recallai/muesli-public`)
+
 ## Gotchas
 
 - `@recallai/desktop-sdk` is unpacked from asar (native module) — handled in `forge.config.js` via `asar.unpackDir`
