@@ -281,6 +281,17 @@ The correct fix is a `before-quit` handler that calls `event.preventDefault()`, 
 
 > **Note:** Force-quit (`kill -9`, Activity Monitor → Force Quit) sends `SIGKILL`, which cannot be caught by any handler. There is no solution for that case.
 
+#### The `shutdown` SDK event and signals
+
+The SDK fires a `shutdown` event when its subprocess exits, providing `{ code, signal }`. The app currently has a log-only listener for this event. Observed in practice: `{ code: 0, signal: 'SIGINT' }` on normal app quit.
+
+The `shutdown` event is **not suitable for completing an upload** — by the time it fires, the SDK subprocess is already dead and `stopRecording()` / `uploadRecording()` cannot be called. Its practical use is narrower:
+
+- **`before-quit`** — right place for graceful shutdown; SDK is still alive, can stop and upload
+- **`shutdown`** — only useful for post-mortem cleanup (e.g. marking active recordings as interrupted in `meetings.json`)
+
+The `signal` field could be used to distinguish intentional shutdown from a crash, but the exact set of signal values the SDK emits is not documented and has only been observed empirically. Known signals from general Unix behavior: `SIGINT` (quit), `SIGTERM` (killed by OS/process manager), `SIGKILL` (force kill — `shutdown` likely never fires in this case). Treat the signal values as informational until confirmed by the SDK docs or testing.
+
 #### Laptop lid / system sleep
 
 There are **no `powerMonitor` handlers** for system suspend/resume. When the lid closes:
