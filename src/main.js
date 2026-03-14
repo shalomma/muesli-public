@@ -90,6 +90,7 @@ app.whenReady().then(() => {
 
   // Set up logger event listener to send logs from main to renderer
   sdkLogger.onLog((logEntry) => {
+    console.log('[SDK]', JSON.stringify(logEntry, null, 2));
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('sdk-log', logEntry);
     }
